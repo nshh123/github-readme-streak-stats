@@ -60,11 +60,10 @@ $optionsInput = strval($args["options"] ?? (readEnv("INPUT_OPTIONS") ?? ""));
 $outputPath = strval($args["path"] ?? (readEnv("INPUT_PATH") ?? "profile/streak.svg"));
 
 try {
-    if (!isset($_SERVER["TOKEN"]) && readEnv("TOKEN") !== null) {
-        $_SERVER["TOKEN"] = readEnv("TOKEN");
-    }
-    if (!isset($_SERVER["TOKEN"]) && readEnv("GITHUB_TOKEN") !== null) {
-        $_SERVER["TOKEN"] = readEnv("GITHUB_TOKEN");
+    $token = readEnv("TOKEN") ?? readEnv("GITHUB_TOKEN") ?? ($_SERVER["TOKEN"] ?? ($_ENV["TOKEN"] ?? null));
+    if ($token !== null) {
+        $_SERVER["TOKEN"] = $token;
+        $_ENV["TOKEN"] = $token;
     }
     if (!isset($_SERVER["TOKEN"])) {
         throw new RuntimeException("Missing GitHub token. Pass the action token input or set TOKEN.");
